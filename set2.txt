@@ -1,0 +1,74 @@
+Q16->Create a Restaurants table / collection with the fields defined above.
+Ans->db.createCollection("Restaurants");
+Q17->Insert five rows / documents into the Restaurants table / collection with data of your choice.
+Ans->db.Restaurants.insertMany([
+  {
+    "name": "Tasty Bites",
+    "cuisine_type": "Italian",
+    "location": "Downtown",
+    "average_rating": 4.5,
+    "delivery_available": true
+  },
+  {
+    "name": "Spice Garden",
+    "cuisine_type": "Indian",
+    "location": "Suburbia",
+    "average_rating": 4.2,
+    "delivery_available": true
+  },
+  {
+    "name": "Sushi Paradise",
+    "cuisine_type": "Japanese",
+    "location": "City Center",
+    "average_rating": 4.7,
+    "delivery_available": true
+  },
+  {
+    "name": "Burger Haven",
+    "cuisine_type": "American",
+    "location": "Mall Area",
+    "average_rating": 4.0,
+    "delivery_available": true
+  },
+  {
+    "name": "La Petite Café",
+    "cuisine_type": "French",
+    "location": "Old Town",
+    "average_rating": 4.8,
+    "delivery_available": false
+  }
+])
+Q18->Write a query to fetch all restaurants, ordered by average_rating in descending order.
+Ans->db.Restaurants.find().sort({ average_rating: -1 })
+
+Q19->: Write a query to fetch all restaurants that offer delivery_available and have an average_rating of more than 4.
+Ans->db.Restaurants.find({
+  delivery_available: true,
+  average_rating: { $gt: 4 }
+})
+Q20->Write a query to count the number of restaurants that have delivery_available.
+Ans->db.Restaurants.find({
+  $or: [
+    { cuisine_type: { $exists: false } },
+    { cuisine_type: null }
+  ]
+})
+Q21-> Write a query to fetch all restaurants whose location contains 'New York'.
+Ans->db.Restaurants.find({
+  location: /New York/i
+})
+
+Q22-> Write a query to calculate the average average_rating of all restaurants.
+Ans->db.Restaurants.aggregate([
+  {
+    $group: {
+      _id: null,
+      averageAvgRating: { $avg: "$average_rating" }
+    }
+  }
+])
+
+Q23->Write a query to fetch the top 5 restaurants when ordered by average_rating in descending order.
+Ans->db.restaurants.find().sort({ average_rating: -1 }).limit(5);
+Q24->Write a query to delete the restaurant with id 3.
+Ans->db.restaurants.deleteOne({ _id: 3 });

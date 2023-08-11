@@ -1,0 +1,91 @@
+ Q1-Create a Customers table / collection with the following fields: id (unique identifier), name, email, address, and phone_number.
+ Ans->db.createCollection("Customers");
+
+Q2- Insert five rows / documents into the **`Customers`** table / collection with data of your choice.
+Ans->db.Customers.insertMany([
+  {
+    "name": "Niharika",
+    "email": "niharikapandeyabc@gmail.com",
+    "address": "Naika, Jhunsi, Praygraj",
+    "phone_number": "8948253728"
+  },
+  {
+    "name": "Priya",
+    "email": "priyapandeyabc@gmail.com",
+    "address": "Mumbai",
+    "phone_number": "8948253720"
+  },
+  {
+    "name": "Priti",
+    "email": "pritipandeyabc@gmail.com",
+    "address": "Delhi",
+    "phone_number": "8948253790"
+  },
+  {
+    "name": "Shubham",
+    "email": "shubhamabc@gmail.com",
+    "address": "Calcutta",
+    "phone_number": "8948253790"
+  },
+  {
+    "name": "Varun",
+    "email": "Varunc@gmail.com",
+    "address": "Lucknow",
+    "phone_number": "89482537899"
+  }
+])
+
+ 
+
+Q3-> write a query to fetch all data from the Customers table / collection.
+Ans->db.Customers.find({})
+
+Q4->Write a query to select only the name and email fields for all customers.
+Ans->db.Customers.find({name:"Niharika"},{email:"niharikapandeyabcgmail.com"})
+
+Q5->Write a query to fetch the customer with the id of 3.
+Ans->db.Customers.find({id:3})
+Q6->Write a query to fetch all customers whose name starts with 'A'.
+Ans->db.Customers.find({ name: /A/ })
+Q7-> Write a query to fetch all customers, ordered by name in descending order.
+Ans->db.Customers.find({}).sort({name:-1})
+Q8-> Write a query to update the address of the customer with id 4.
+Ans->db.Customers.updateOne(
+  { _id: ObjectId("64d62e25e1247b63a572cdd8") }, 
+  {
+    $set: {
+      address: "New Address Value"
+    }
+  }
+)
+Q9->Write a query to fetch the top 3 customers when ordered by id in ascending order.
+Ans->db.Customers.find().sort({ _id: 1 }).limit(3)
+Q10->Write a query to delete the customer with id 2.
+Ans->db.Customers.deleteOne({id: ObjectId(2) })
+Q11->Write a query to count the number of customers.
+Ans->const customerCount = db.Customers.countDocuments();
+print("Number of customers:", customerCount);
+Q12->Write a query to fetch all customers except the first two when ordered by id in ascending order.
+Ans->db.Customers.find().sort({id: 1 }).skip(2)
+Q13->Write a query to fetch all customers whose id is greater than 2 and name starts with 'B'.\
+Ans->db.Customers.find({
+ id: { $gt: ObjectId("2") },
+  name: /^B/
+})
+Q14->Write a query to fetch all customers whose id is less than 3 or name ends with 's'.
+Ans->db.Customers.find({
+  $or: [
+    {id: { $lt: ObjectId("3") } },
+    { name: /s$/ }
+  ]
+})
+Q15->Write a query to fetch all customers where the phone_number field is not set or is null.
+Ans->db.Customers.find({
+  $or: [
+    { phone_number: { $exists: false } },
+    { phone_number: null }
+  ]
+})
+
+
+Ans->
