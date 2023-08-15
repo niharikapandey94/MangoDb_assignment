@@ -1,0 +1,103 @@
+Q26-> Create a Rides table / collection with the fields defined above.
+Ans->db.createCollection("Rides");
+Q27-> Insert five rows / documents into the Rides table / collection with data of your choice.
+Ans->db.Rides.insertMany([
+  {
+    "driver_id": ObjectId(),
+    "passenger_id": ObjectId(),
+    "start_location": "Location A",
+    "end_location": "Location B",
+    "distance": 8,
+    "ride_time": 20,
+    "fare": 12.99
+  },
+  {
+    "driver_id": ObjectId(),
+    "passenger_id": ObjectId(),
+    "start_location": "Location X",
+    "end_location": "Location Y",
+    "distance": 15,
+    "ride_time": 40,
+    "fare": 20.50
+  },
+  {
+    "driver_id": ObjectId(),
+    "passenger_id": ObjectId(),
+    "start_location": "Location P",
+    "end_location": "Location Q",
+    "distance": 5,
+    "ride_time": 15,
+    "fare": 8.75
+  },
+  {
+    "driver_id": ObjectId(),
+    "passenger_id": ObjectId(),
+    "start_location": "Location M",
+    "end_location": "Location N",
+    "distance": 10,
+    "ride_time": 25,
+    "fare": 15.00
+  },
+  {
+    "driver_id": ObjectId(),
+    "passenger_id": ObjectId(),
+    "start_location": "Location S",
+    "end_location": "Location T",
+    "distance": 12,
+    "ride_time": 30,
+    "fare": 17.25
+  }
+])
+Q28->Write a query to fetch all rides, ordered by fare in descending order.
+Ans->db.Rides.find().sort({ fare: -1 })
+
+Q29->Write a query to calculate the total distance and total fare for all rides.
+Ans->db.Rides.aggregate([
+  {
+    $group: {
+      _id: null,
+      totalDistance: { $sum: "$distance" },
+      totalFare: { $sum: "$fare" }
+    }
+  }
+])
+Q30->Write a query to calculate the average ride_time of all rides.
+Ans->db.Rides.aggregate([
+  {
+    $group: {
+      _id: null,
+      averageRideTime: { $avg: "$ride_time" }
+    }
+  }
+])
+Q31-> Write a query to fetch all rides whose start_location or end_location contains 'Downtown'.
+Ans->db.Rides.find({
+  $or: [
+    { start_location: { $regex: /Downtown/i } }, // Case-insensitive regex match
+    { end_location: { $regex: /Downtown/i } }
+  ]
+})
+Q32->Write a query to count the number of rides for a given driver_id.
+Ans->const driverIdToCount = ObjectId("your-driver-id");
+
+db.Rides.countDocuments({ driver_id: driverIdToCount })
+Q33->Write a query to update the fare of the ride with id 4.
+Ans->db.Rides.updateOne(
+  { _id: rideIdToUpdate },
+  { $set: { fare: newFare } }
+)
+Q34->Write a query to calculate the total fare for each driver_id.
+Ans->db.Rides.aggregate([
+  {
+    $group: {
+      _id: "$driver_id",
+      totalFare: { $sum: "$fare" }
+    }
+  }
+])
+Q35->Write a query to delete the ride with id 2.
+Ans->const rideIdToDelete = ObjectId("2"); 
+
+db.Rides.deleteOne({ id: rideIdToDelete })
+
+

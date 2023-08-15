@@ -1,0 +1,160 @@
+Q36->Write a query to find the ride with the highest and lowest fare.
+Ans->db.Rides.find().sort({ fare: 1 }).limit(1)
+
+Q37->Write a query to find the average fare and distance for each driver_id.
+Ans->db.Rides.aggregate([
+  {
+    $group: {
+      _id: "$driver_id",
+      averageFare: { $avg: "$fare" },
+      averageDistance: { $avg: "$distance" }
+    }
+  }
+])
+
+Q38->Write a query to find driver_id that have completed more than 5 rides.
+Ans->db.Rides.aggregate([
+  {
+    $group: {
+      _id: "$driver_id",
+      totalRides: { $sum: 1 }
+    }
+  },
+  {
+    $match: {
+      totalRides: { $gt: 5 }
+    }
+  }
+])
+
+
+Q39->: Assuming there is another collection/table called Drivers with driver_id and name fields,
+ write a query to find the name of the driver with the highest fare.
+Ans->db.Rides.aggregate([
+  {
+    $group: {
+      _id: "$driver_id",
+      totalFare: { $sum: "$fare" }
+    }
+  },
+  {
+    $sort: { totalFare: -1 }
+  },
+  {
+    $limit: 1
+  },
+  {
+    $lookup: {
+      from: "Drivers",
+      localField: "_id",
+      foreignField: "driver_id",
+      as: "driver_info"
+    }
+  },
+  {
+    $unwind: "$driver_info"
+  },
+  {
+    $project: {
+      _id: 0,
+      driver_name: "$driver_info.name",
+      totalFare: 1
+    }
+  }
+])
+
+Q40->Write a query to count the number of restaurants that have delivery_available.
+Ans->db.Restaurants.find({
+  $or: [
+    { cuisine_type: { $exists: false } },
+    { cuisine_type: null }
+  ]
+})
+Q41->  Write a query to find the top 3 drivers who have earned the most from fares. Return the drivers' ids and total earnings.
+Ans->db.Rides.aggregate([
+  {
+    $group: {
+      _id: "$driver_id",
+      totalEarnings: { $sum: "$fare" }
+    }
+  },
+  {
+    $sort: { totalEarnings: -1 }
+  },
+  {
+    $limit: 3
+  },
+  {
+    $project: {
+      _id: 0,
+      driver_id: "$_id",
+      totalEarnings: 1
+    }
+  }
+])
+
+
+Q42->  Write a query to find all rides where the end_location is not set.
+Ans->db.Rides.find({ end_location: { $exists: false } })
+
+
+Q43-Write a query to calculate the fare per mile for each ride and return the ride ids and their fare per mile, 
+ordered by fare per mile in descending order.
+Ans->db.Rides.aggregate([
+  {
+    $addFields: {
+      fare_per_mile: { $divide: ["$fare", "$distance"] }
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      fare_per_mile: 1
+    }
+  },
+  {
+    $sort: { fare_per_mile: -1 }
+  }
+])
+
+Q44->Assuming there's another collection/table Passengers with passenger_id and name fields, 
+write a query to return a list of all rides including the driver's name and passenger's name.
+Ans->db.Rides.aggregate([
+  {
+    $lookup: {
+      from: "Drivers",
+      localField: "driver_id",
+      foreignField: "driver_id",
+      as: "driver"
+    }
+  },
+  {
+    $lookup: {
+      from: "Passengers",
+      localField: "passenger_id",
+      foreignField: "passenger_id",
+      as: "passenger"
+    }
+  },
+  {
+    $unwind: "$driver"
+  },
+  {
+    $unwind: "$passenger"
+  },
+  {
+    $project: {
+      _id: 1,
+      driver_name: "$driver.name",
+      passenger_name: "$passenger.name",
+      start_location: 1,
+      end_location: 1,
+      distance: 1,
+      ride_time: 1,
+      fare: 1
+    }
+  }
+])
+Q45->Write a query to add a tip field to the Rides table / collection.
+Ans->db.Rides.updateMany({}, { $set: { tip: 0 } })
+
